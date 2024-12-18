@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP4 to MP3 Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-roboto">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">MP4 to MP3 Converter</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4">
+        <!-- Conversion Section -->
+        <section class="bg-white p-6 rounded-lg shadow-lg mt-6">
+            <h2 class="text-xl font-bold mb-4">Convert MP4 to MP3</h2>
+            <form id="uploadForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" for="file-upload">Upload MP4 File</label>
+                    <input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" id="file-upload" type="file" name="file">
+                </div>
+                <button class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="submit">
+                    Convert
+                </button>
+            </form>
+            <div id="downloadSection" class="hidden mt-4">
+                <p class="text-green-600 font-bold">Your file is ready to download!</p>
+                <a id="downloadLink" class="text-blue-600 hover:underline" href="#" download>Download MP3</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>© 2024 MP4 to MP3 Converter. Developed by Mohasin Mushtaq Dhool.</p>
+        </div>
+    </footer>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const downloadSection = document.getElementById('downloadSection');
+        const downloadLink = document.getElementById('downloadLink');
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('file-upload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file to upload!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // Replace this URL with your backend's live or local endpoint
+                const response = await fetch('http://localhost:5000/convert', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('File conversion failed.');
+                }
+
+                const data = await response.json();
+                downloadLink.href = data.downloadUrl; // Server returns a download URL
+                downloadSection.classList.remove('hidden');
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
